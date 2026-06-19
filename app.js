@@ -3,6 +3,7 @@ let currentTab = 'all';
 let masterPassword = null;
 let passwords = [];
 let editingId = null;
+let divisions = ['Sai Sujit', 'Prasad', 'SreeLakshmi', 'Sunandamma', 'General'];
 
 // DOM Elements
 const lockScreen = document.getElementById('lock-screen');
@@ -39,6 +40,15 @@ const toggleEntryPasswordVisibility = document.getElementById('toggle-entry-pass
 const generateSuggestedPassword = document.getElementById('generate-suggested-password');
 const cancelModalBtn = document.getElementById('cancel-modal-btn');
 const closeModalBtn = document.getElementById('close-modal-btn');
+
+// Divisions Modal Elements
+const divisionsModal = document.getElementById('divisions-modal');
+const manageDivisionsBtn = document.getElementById('manage-divisions-btn');
+const closeDivisionsModalBtn = document.getElementById('close-divisions-modal-btn');
+const addDivisionForm = document.getElementById('add-division-form');
+const newDivisionInput = document.getElementById('new-division-input');
+const divisionsList = document.getElementById('divisions-list');
+const sidebarDivisionsList = document.getElementById('sidebar-divisions-list');
 
 // Generator Modal Elements
 const generatorModal = document.getElementById('generator-modal');
@@ -123,6 +133,8 @@ function unlockVault() {
     lockScreen.classList.remove('active');
     appContainer.classList.remove('hidden');
     loadPasswords();
+    renderSidebarDivisions();
+    renderModalDivisionsDropdown();
     renderApp();
 }
 
@@ -147,11 +159,27 @@ function loadPasswords() {
     } else {
         passwords = [];
     }
+
+    const rawDivisions = localStorage.getItem('vault_divisions');
+    if (rawDivisions) {
+        try {
+            divisions = JSON.parse(rawDivisions);
+        } catch (e) {
+            // Keep default
+        }
+    }
 }
 
 function savePasswords() {
     // In a real application, you would encrypt before saving to localStorage
     localStorage.setItem('vault_passwords', JSON.stringify(passwords));
+    updateBadges();
+}
+
+function saveDivisions() {
+    localStorage.setItem('vault_divisions', JSON.stringify(divisions));
+    renderSidebarDivisions();
+    renderModalDivisionsDropdown();
     updateBadges();
 }
 
@@ -345,15 +373,131 @@ function escapeHTML(str) {
 
 function updateBadges() {
     const badgeAll = document.getElementById('badge-all');
-    badgeAll.textContent = passwords.length;
+    if (badgeAll) badgeAll.textContent = passwords.length;
 
-    const divisions = ['Sai Sujit', 'Prasad', 'SreeLakshmi', 'Sunandamma', 'General'];
     divisions.forEach(div => {
         const count = passwords.filter(item => item.division === div).length;
-        const elementId = `badge-${div.toLowerCase().replace(/\s+/g, '-')}`;
-        const element = document.getElementById(elementId);
+        const badgeId = `badge-${div.toLowerCase().replace(/\s+/g, '-')}`;
+        const element = document.getElementById(badgeId);
         if (element) element.textContent = count;
     });
+}
+
+function renderSidebarDivisions() {
+    sidebarDivisionsList.innerHTML = `
+        <li class="nav-item ${currentTab === 'all' ? 'active' : ''}" data-tab="all">
+            <i data-lucide="layout-grid"></i>
+            <span>All Passwords</span>
+            <span class="badge" id="badge-all">${passwords.length}</span>
+        </li>
+    `;
+
+    divisions.forEach(div => {
+        const isActive = currentTab === div;
+        const count = passwords.filter(item => item.division === div).length;
+        const badgeId = `badge-${div.toLowerCase().replace(/\s+/g, '-')}`;
+        
+        let icon = 'user';
+        const lower = div.toLowerCase();
+        if (lower.includes('work') || lower.includes('office')) icon = 'briefcase';
+        else if (lower.includes('general') || lower.includes('other')) icon = 'globe';
+        else if (lower.includes('family') || lower.includes('home')) icon = 'home';
+        else if (lower.includes('shared') || lower.includes('users')) icon = 'users';
+
+        const li = document.createElement('li');
+        li.className = `nav-item ${isActive ? 'active' : ''}`;
+        li.setAttribute('data-tab', div);
+        li.innerHTML = `
+            <i data-lucide="${icon}"></i>
+            <span>${escapeHTML(div)}</span>
+            <span class="badge" id="${badgeId}">${count}</span>
+        `;
+        sidebarDivisionsList.appendChild(li);
+    });
+    lucide.createIcons();
+}
+
+function renderModalDivisionsDropdown() {
+    const selected = entryDivision.value || 'General';
+    entryDivision.innerHTML = '';
+    divisions.forEach(div => {
+        const opt = document.createElement('option');
+        opt.value = div;
+        opt.textContent = div;
+        if (div === selected) opt.selected = true;
+        entryDivision.appendChild(opt);
+    });
+}
+
+function renderDivisionsManagementList() {
+    divisionsList.innerHTML = '';
+    divisions.forEach(div => {
+        const li = document.createElement('li');
+        li.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); padding:8px 16px; border-radius:10px; width: 100%;';
+        li.innerHTML = `
+            <span>${escapeHTML(div)}</span>
+            <button type="button" class="icon-btn tiny-btn" style="color:var(--danger);" onclick="deleteDivision('${escapeHTML(div)}')" title="Delete Division">
+                <i data-lucide="trash-2"></i>
+            </button>
+        `;
+        divisionsList.appendChild(li);
+    });
+    lucide.createIcons();
+}
+
+window.deleteDivision = function(name) {
+    if (divisions.length <= 1) {
+        showToast('You must keep at least one division', 'warning');
+        return;
+    }
+    
+    const count = passwords.filter(item => item.division === name).length;
+    if (count > 0) {
+        if (!confirm(`This division contains ${count} password(s). Deleting it will re-categorize them to "${divisions.find(d => d !== name)}". Proceed?`)) {
+            return;
+        }
+        const fallback = divisions.find(d => d !== name);
+        passwords.forEach(item => {
+            if (item.division === name) item.division = fallback;
+        });
+        savePasswords();
+    }
+
+    divisions = divisions.filter(d => d !== name);
+    if (currentTab === name) {
+        currentTab = 'all';
+    }
+    saveDivisions();
+    renderDivisionsManagementList();
+    renderApp();
+    showToast(`Division "${name}" deleted`, 'warning');
+};
+
+function handleAddDivision(e) {
+    e.preventDefault();
+    const name = newDivisionInput.value.trim();
+    if (!name) return;
+
+    if (divisions.some(d => d.toLowerCase() === name.toLowerCase())) {
+        showToast('Division already exists', 'warning');
+        return;
+    }
+
+    divisions.push(name);
+    newDivisionInput.value = '';
+    saveDivisions();
+    renderDivisionsManagementList();
+    renderApp();
+    showToast(`Division "${name}" added!`, 'success');
+}
+
+function openDivisionsModal() {
+    divisionsModal.classList.remove('hidden');
+    renderDivisionsManagementList();
+}
+
+function closeDivisionsModal() {
+    divisionsModal.classList.add('hidden');
 }
 
 function copyText(text, label) {
@@ -393,11 +537,13 @@ function openAddModal() {
     passwordForm.reset();
     entryId.value = '';
     
+    renderModalDivisionsDropdown();
+    
     // Default to current division if on one of division tabs
     if (currentTab !== 'all') {
         entryDivision.value = currentTab;
     } else {
-        entryDivision.value = 'General';
+        entryDivision.value = divisions.includes('General') ? 'General' : divisions[0];
     }
 
     modalContainer.classList.remove('hidden');
@@ -409,6 +555,8 @@ window.openEditModal = function(id) {
 
     modalTitle.textContent = "Edit Credential";
     editingId = id;
+    
+    renderModalDivisionsDropdown();
     
     entryId.value = item.id;
     entryTitle.value = item.title;
@@ -554,6 +702,11 @@ function setupEventListeners() {
     cancelModalBtn.addEventListener('click', closeFormModal);
     closeModalBtn.addEventListener('click', closeFormModal);
     passwordForm.addEventListener('submit', handleFormSubmit);
+
+    // Division Management Triggers
+    manageDivisionsBtn.addEventListener('click', openDivisionsModal);
+    closeDivisionsModalBtn.addEventListener('click', closeDivisionsModal);
+    addDivisionForm.addEventListener('submit', handleAddDivision);
 
     lockVaultBtn.addEventListener('click', lockVault);
 

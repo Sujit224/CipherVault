@@ -53,38 +53,14 @@
             </div>
 
             <nav class="sidebar-nav">
-                <p class="nav-label">Divisions</p>
-                <ul class="nav-list">
-                    <li class="nav-item active" data-tab="all">
-                        <i data-lucide="layout-grid"></i>
-                        <span>All Passwords</span>
-                        <span class="badge" id="badge-all">0</span>
-                    </li>
-                    <li class="nav-item" data-tab="Sai Sujit">
-                        <i data-lucide="user"></i>
-                        <span>Sai Sujit</span>
-                        <span class="badge" id="badge-sai-sujit">0</span>
-                    </li>
-                    <li class="nav-item" data-tab="Prasad">
-                        <i data-lucide="user"></i>
-                        <span>Prasad</span>
-                        <span class="badge" id="badge-prasad">0</span>
-                    </li>
-                    <li class="nav-item" data-tab="SreeLakshmi">
-                        <i data-lucide="user"></i>
-                        <span>SreeLakshmi</span>
-                        <span class="badge" id="badge-sreelakshmi">0</span>
-                    </li>
-                    <li class="nav-item" data-tab="Sunandamma">
-                        <i data-lucide="user"></i>
-                        <span>Sunandamma</span>
-                        <span class="badge" id="badge-sunandamma">0</span>
-                    </li>
-                    <li class="nav-item" data-tab="General">
-                        <i data-lucide="globe"></i>
-                        <span>General</span>
-                        <span class="badge" id="badge-general">0</span>
-                    </li>
+                <div class="nav-label-container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <p class="nav-label" style="margin-bottom: 0;">Divisions</p>
+                    <button class="icon-btn tiny-btn" id="manage-divisions-btn" title="Manage Divisions" style="color: var(--text-muted); background: none; border: none; cursor: pointer;">
+                        <i data-lucide="settings" style="width: 14px; height: 14px;"></i>
+                    </button>
+                </div>
+                <ul class="nav-list" id="sidebar-divisions-list">
+                    <!-- Dynamically Rendered -->
                 </ul>
 
                 <p class="nav-label">Tools</p>
@@ -282,6 +258,31 @@
                     <i data-lucide="check"></i>
                     <span>Use Password</span>
                 </button>
+            </div>
+    <!-- Manage Divisions Modal -->
+    <div id="divisions-modal" class="modal-container hidden">
+        <div class="modal-card glass max-w-md">
+            <div class="modal-header">
+                <h3>Manage Divisions</h3>
+                <button class="icon-btn" id="close-divisions-modal-btn">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="divisions-modal-body" style="display:flex; flex-direction:column; gap:20px;">
+                <!-- Add division form -->
+                <form id="add-division-form" style="display:flex; gap:10px;">
+                    <input type="text" id="new-division-input" placeholder="e.g. Work, Family" required style="flex-grow:1;">
+                    <button type="submit" class="btn primary-btn" style="padding:10px 16px;">Add</button>
+                </form>
+
+                <!-- Divisions list -->
+                <div class="divisions-list-container" style="max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
+                    <label>Current Divisions</label>
+                    <ul id="divisions-list" style="list-style:none; display:flex; flex-direction:column; gap:8px; padding:0;">
+                        <!-- Dynamically populated list of divisions with delete buttons -->
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
