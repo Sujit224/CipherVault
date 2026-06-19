@@ -8,12 +8,8 @@ A premium, frontend-only password manager featuring a glassmorphic dashboard, cl
 
 - **Premium Horizontal Dashboard**: Clean row layouts displaying credentials, titles, division tags, and toggle controls.
 - **Client-Side Security**: Configured with a local Master Password check saved securely on your browser.
-- **Division Categorization**: Passwords categorized into:
-  - Sai Sujit
-  - Prasad
-  - SreeLakshmi
-  - Sunandamma
-  - General
+- **Dynamic Division Categorization**: Passwords categorized into customizable divisions (defaults: **Home**, **Work**, and **General**).
+- **Manage Divisions Panel**: Create, list, or delete custom divisions dynamically. Existing passwords in a deleted division are safely re-categorized to prevent orphan records.
 - **Masked Password Security**: Hidden password inputs with eye button visibility toggles.
 - **Instant Copy Actions**: Clipboard copy shortcuts for usernames and passwords with automatic status toasts.
 - **Password Strength Generator**: Integrated generation slider with visual indicators.
