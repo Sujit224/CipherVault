@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherVault - Premium Password Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Master Lock Screen -->
+    <div id="lock-screen" class="lock-screen active">
+        <div class="lock-card glass">
+            <div class="lock-icon-container">
+                <i data-lucide="shield-alert" class="lock-icon pulse"></i>
+            </div>
+            <h2 id="lock-title">Secure Vault Setup</h2>
+            <p id="lock-description">Create a Master Password to encrypt and secure your vault locally.</p>
+            
+            <form id="lock-form" class="lock-form">
+                <div class="input-group">
+                    <input type="password" id="master-password-input" placeholder="Enter Master Password" required autofocus autocomplete="current-password">
+                    <button type="button" id="toggle-master-visibility" class="icon-btn">
+                        <i data-lucide="eye"></i>
+                    </button>
+                </div>
+                <button type="submit" id="lock-submit-btn" class="btn primary-btn">
+                    <span>Set Master Password</span>
+                    <i data-lucide="arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Vault App Container -->
+    <div id="app-container" class="app-container hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i data-lucide="key-round"></i>
+                    </div>
+                    <span class="logo-text">CipherVault</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-label">Divisions</p>
+                <ul class="nav-list">
+                    <li class="nav-item active" data-tab="all">
+                        <i data-lucide="layout-grid"></i>
+                        <span>All Passwords</span>
+                        <span class="badge" id="badge-all">0</span>
+                    </li>
+                    <li class="nav-item" data-tab="Sai Sujit">
+                        <i data-lucide="user"></i>
+                        <span>Sai Sujit</span>
+                        <span class="badge" id="badge-sai-sujit">0</span>
+                    </li>
+                    <li class="nav-item" data-tab="Prasad">
+                        <i data-lucide="user"></i>
+                        <span>Prasad</span>
+                        <span class="badge" id="badge-prasad">0</span>
+                    </li>
+                    <li class="nav-item" data-tab="SreeLakshmi">
+                        <i data-lucide="user"></i>
+                        <span>SreeLakshmi</span>
+                        <span class="badge" id="badge-sreelakshmi">0</span>
+                    </li>
+                    <li class="nav-item" data-tab="Sunandamma">
+                        <i data-lucide="user"></i>
+                        <span>Sunandamma</span>
+                        <span class="badge" id="badge-sunandamma">0</span>
+                    </li>
+                    <li class="nav-item" data-tab="General">
+                        <i data-lucide="globe"></i>
+                        <span>General</span>
+                        <span class="badge" id="badge-general">0</span>
+                    </li>
+                </ul>
+
+                <p class="nav-label">Tools</p>
+                <ul class="nav-list">
+                    <li class="nav-item-tool" id="tool-generator">
+                        <i data-lucide="cpu"></i>
+                        <span>Password Generator</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn secondary-btn lock-vault-btn" id="lock-vault-btn">
+                    <i data-lucide="lock"></i>
+                    <span>Lock Vault</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Dashboard Bar -->
+            <header class="top-bar glass">
+                <div class="search-container">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Search accounts, titles, URLs...">
+                </div>
+
+                <div class="actions-container">
+                    <button class="btn primary-btn" id="add-password-btn">
+                        <i data-lucide="plus"></i>
+                        <span>Add Password</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Inner Content -->
+            <div class="dashboard-body">
+                <div class="dashboard-header">
+                    <div>
+                        <h1 id="current-division-title">All Passwords</h1>
+                        <p class="subtitle" id="current-division-subtitle">Manage and access your stored credentials securely</p>
+                    </div>
+                </div>
+
+                <!-- Password Cards Grid -->
+                <div class="passwords-grid" id="passwords-grid">
+                    <!-- Cards will be dynamically inserted here -->
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state hidden" id="empty-state">
+                    <div class="empty-icon-container">
+                        <i data-lucide="shield-question"></i>
+                    </div>
+                    <h3>No passwords found</h3>
+                    <p>Get started by adding a new credential to this division.</p>
+                    <button class="btn primary-btn" id="empty-add-btn">
+                        <i data-lucide="plus"></i>
+                        <span>Add First Password</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Password Add/Edit Modal -->
+    <div id="modal-container" class="modal-container hidden">
+        <div class="modal-card glass">
+            <div class="modal-header">
+                <h3 id="modal-title">Add New Password</h3>
+                <button class="icon-btn close-modal-btn" id="close-modal-btn">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="password-form" class="modal-form">
+                <input type="hidden" id="entry-id">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="entry-title">Title</label>
+                        <input type="text" id="entry-title" placeholder="e.g. Google, Work Email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="entry-division">Division / Category</label>
+                        <select id="entry-division" required>
+                            <option value="Sai Sujit">Sai Sujit</option>
+                            <option value="Prasad">Prasad</option>
+                            <option value="SreeLakshmi">SreeLakshmi</option>
+                            <option value="Sunandamma">Sunandamma</option>
+                            <option value="General" selected>General</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="entry-username">Username or Email (Optional)</label>
+                        <input type="text" id="entry-username" placeholder="Username, email, or phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="entry-url">Website URL (Optional)</label>
+                        <input type="url" id="entry-url" placeholder="https://example.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="entry-password">Password</label>
+                    <div class="input-with-actions">
+                        <input type="password" id="entry-password" placeholder="Password" required>
+                        <button type="button" id="toggle-entry-password-visibility" class="icon-btn" title="Toggle Visibility">
+                            <i data-lucide="eye"></i>
+                        </button>
+                        <button type="button" id="generate-suggested-password" class="icon-btn" title="Generate Password">
+                            <i data-lucide="sparkles"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="entry-notes">Notes (Optional)</label>
+                    <textarea id="entry-notes" placeholder="Any additional information, recovery keys, pin code..." rows="3"></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn secondary-btn" id="cancel-modal-btn">Cancel</button>
+                    <button type="submit" class="btn primary-btn" id="save-entry-btn">Save Credential</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Generator Tool Modal -->
+    <div id="generator-modal" class="modal-container hidden">
+        <div class="modal-card glass max-w-md">
+            <div class="modal-header">
+                <h3>Password Generator</h3>
+                <button class="icon-btn" id="close-generator-btn">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="generator-body">
+                <div class="generated-display glass">
+                    <span id="gen-password-display" class="password-text">Select options...</span>
+                    <div class="gen-actions">
+                        <button type="button" class="icon-btn" id="refresh-gen-password" title="Regenerate">
+                            <i data-lucide="refresh-cw"></i>
+                        </button>
+                        <button type="button" class="icon-btn" id="copy-gen-password" title="Copy Password">
+                            <i data-lucide="copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="strength-meter">
+                    <div class="strength-bar-container">
+                        <div id="strength-bar" class="strength-bar"></div>
+                    </div>
+                    <span id="strength-text" class="strength-text">Weak</span>
+                </div>
+
+                <div class="generator-options">
+                    <div class="range-group">
+                        <div class="range-labels">
+                            <span>Length</span>
+                            <span id="length-val">16</span>
+                        </div>
+                        <input type="range" id="gen-length" min="8" max="32" value="16">
+                    </div>
+
+                    <div class="checkbox-grid">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="gen-uppercase" checked>
+                            <span>Uppercase (A-Z)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="gen-lowercase" checked>
+                            <span>Lowercase (a-z)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="gen-numbers" checked>
+                            <span>Numbers (0-9)</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="gen-symbols" checked>
+                            <span>Symbols (!@#$%)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn primary-btn w-full" id="use-gen-password-btn">
+                    <i data-lucide="check"></i>
+                    <span>Use Password</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
