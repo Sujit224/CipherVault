@@ -3,7 +3,7 @@ let currentTab = 'all';
 let masterPassword = null;
 let passwords = [];
 let editingId = null;
-let divisions = ['Sai Sujit', 'Prasad', 'SreeLakshmi', 'Sunandamma', 'General'];
+let divisions = ['Home', 'Work', 'General'];
 
 // DOM Elements
 const lockScreen = document.getElementById('lock-screen');
@@ -188,7 +188,7 @@ function loadInitialMockData() {
         {
             id: 'mock-1',
             title: 'Personal Gmail',
-            division: 'Sai Sujit',
+            division: 'Home',
             username: 'saisujit@gmail.com',
             password: 'SujitSuperSecurePass2026!',
             url: 'https://gmail.com',
@@ -206,7 +206,7 @@ function loadInitialMockData() {
         {
             id: 'mock-3',
             title: 'Office Cloud Access',
-            division: 'Prasad',
+            division: 'Work',
             username: 'prasad.workspace@company.com',
             password: 'PrasadWorkCloud2026*',
             url: 'https://portal.office.com',
@@ -215,7 +215,7 @@ function loadInitialMockData() {
         {
             id: 'mock-4',
             title: 'Online Banking',
-            division: 'SreeLakshmi',
+            division: 'Home',
             username: 'sree.lakshmi99',
             password: 'SreeBankSecurePass!',
             url: 'https://icicibank.com',
@@ -224,7 +224,7 @@ function loadInitialMockData() {
         {
             id: 'mock-5',
             title: 'E-learning Hub',
-            division: 'Sunandamma',
+            division: 'Work',
             username: 'sunandamma.edu',
             password: 'SunandaLearn#2026',
             url: 'https://coursera.org',

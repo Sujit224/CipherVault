@@ -592,10 +592,8 @@ select option {
 }
 
 /* Assign unique colors to division badges */
-.badge-sai-sujit { background: rgba(99, 102, 241, 0.12); color: #818cf8; border-color: rgba(99, 102, 241, 0.2); }
-.badge-prasad { background: rgba(239, 68, 68, 0.12); color: #f87171; border-color: rgba(239, 68, 68, 0.2); }
-.badge-sreelakshmi { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.2); }
-.badge-sunandamma { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border-color: rgba(245, 158, 11, 0.2); }
+.badge-home { background: rgba(99, 102, 241, 0.12); color: #818cf8; border-color: rgba(99, 102, 241, 0.2); }
+.badge-work { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.2); }
 .badge-general { background: rgba(217, 70, 239, 0.12); color: #f472b6; border-color: rgba(217, 70, 239, 0.2); }
 
 .card-details-row {
